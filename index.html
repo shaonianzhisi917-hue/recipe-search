@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>言小魅·2026（夏） 查阅</title>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fbf7ef;
+      --panel: #fffdf8;
+      --ink: #211f1a;
+      --muted: #756f65;
+      --line: #e6dccb;
+      --accent: #b85c38;
+      --accent-soft: #f3d8c8;
+      --match: #ffe08a;
+      --shadow: 0 10px 28px rgba(61, 45, 28, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 14px 36px;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: -18px -14px 14px;
+      padding: max(18px, env(safe-area-inset-top)) 14px 12px;
+      background: color-mix(in srgb, var(--bg) 94%, white);
+      border-bottom: 1px solid rgba(230, 220, 203, 0.9);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #searchInput {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 0 14px;
+      outline: none;
+      box-shadow: var(--shadow);
+    }
+
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(184, 92, 56, 0.16), var(--shadow);
+    }
+
+    .icon-button {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .status {
+      min-height: 24px;
+      margin: 10px 2px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quick {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 0 8px;
+      scrollbar-width: none;
+    }
+
+    .quick::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.76);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 11px;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .page {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .score {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .snippet {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    mark {
+      background: var(--match);
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action {
+      border: 1px solid var(--accent-soft);
+      background: #fff3eb;
+      color: #71371f;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    details {
+      margin-top: 10px;
+    }
+
+    summary {
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 13px;
+      list-style-position: inside;
+    }
+
+    .fulltext {
+      margin: 10px 0 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff8ec;
+      border: 1px solid #eee0c9;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+
+    .empty {
+      margin-top: 36px;
+      text-align: center;
+      color: var(--muted);
+      padding: 0 18px;
+    }
+
+    .empty strong {
+      display: block;
+      color: var(--ink);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="top">
+      <h1>言小魅·2026（夏）</h1>
+      <p class="meta">32 页 · 可搜索 32 页 · 2026-07-10 01:15</p>
+      <div class="quick" id="quickTerms"></div>
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="搜索配方、原料、克数" autocomplete="off" autofocus>
+        <button class="icon-button" id="clearButton" aria-label="清空搜索" title="清空搜索">
+          <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="status" id="status">输入关键词开始查找</div>
+    </section>
+    <section id="results" class="result-list"></section>
+    <section id="empty" class="empty">
+      <strong>先搜一个原料或产品名</strong>
+      <span>例如：红茶汤、果糖、巧克力、柠檬。</span>
+    </section>
+    <p class="footer">所有结果来自 PDF 原文提取。以页码和原文为准。</p>
+  </main>
+
+  <script id="pdfData" type="application/json">{"meta": {"title": "言小魅·2026（夏）", "sourceFile": "言小魅·2026（夏）.pdf", "pageCount": 32, "searchablePages": 32, "encrypted": false, "generatedAt": "2026-07-10 01:15"}, "pages": [{"page": 1, "text": "— 1 —\n言小魅·2026(夏)✦ 完整配方手册 ✦\n共 90 个配方 · 13 个产品系列\n配方导航目录\n茶叶泡制 2\n奶茶 2\n柠檬茶 4\n美式咖啡 10\n拿铁咖啡 12\n新鲜水果茶 15\n气泡特饮 18\n熬煮鲜果茶 21\n小吃类 25\n酸奶 26\n冰沙 28\n软饮 30\n中国茶 31", "charCount": 146}, {"page": 2, "text": "— 2 —\n 茶叶泡制\n绿茶泡制\n 原料与做法\n整份:茉莉毛尖 100 克,开水 3000ML,冰块 2000 克\n半份:茉莉毛尖 50 克,开水 1500ML,冰块 1000 克\n时间:七分钟\n 注意事项\n泡制的时候拉茶两次,中途搅拌,不用盖盖\n山茶花乌⻰\n 原料与做法\n整份:山茶花乌⻰ 100 克,开水 3000ML,冰块 2000 克\n半份:山茶花乌⻰ 50 克,开水 1500ML,冰块 1000 克\n泡制 15 分钟\n 注意事项\n泡制时候拉茶两次,中途搅拌,不用盖盖\n红茶汤\n 原料与做法\n整份:正山小种 80 克,阿萨姆 CTC40 克,开水 3000ML,\n冰块 2000 克\n半份:正山小种 40 克,阿萨姆 CTC20 克,开水 1500ML,\n冰块 1000 克\n泡制 15 分钟\n 注意事项\n泡制时候拉茶两次,中途搅拌,需要盖盖", "charCount": 376}, {"page": 3, "text": "— 3 —\n 奶茶\n原味奶茶\n 原料与做法\n顺滑牛乳120 克,黑糖20 克,果糖10 克,红茶汤 350ML\n 注意事项\n可以做冷、热、常温\n热饮只需打热,再补一点热水即可\n常温做法与热饮一样,补纯净水即可\n20A杯子出品,封口盖盖\n香浓巧克力\n 原料与做法\n冷:巧克力粉30 克,巧克力酱 20克,开水 100ML,顺滑牛\n乳 100 克,牛奶 100ML\n热:巧克力粉 30 克,巧克力酱 20 克,开水150ML,顺滑牛\n乳 150 克,牛奶 150ML\n冷饮:冰块补满即可\n热饮:打热之后加一点点热水即可\n常温:纯净水补满即可\n 注意事项\n20A杯子出品,封口盖盖\n阳春白雪\n 原料与做法\n冷:顺滑牛乳 50 克,牛奶 80 克,果糖25 克,绿茶汤 300M\nL\n热:顺滑牛乳 80 克,牛奶 100 克,果糖 30 克,绿茶汤 350\nML\n冷饮:冰块补满即可\n热饮:打热之后,热水补满即可\n常温:纯净水补满即可\n 注意事项\n可做冷、热、常温\n20A 杯子出品,封口盖盖", "charCount": 442}, {"page": 4, "text": "— 4 —\n山茶初醒\n 原料与做法\n冷:顺滑牛乳 50 克,牛奶 80 克,果糖25 克,山茶花茶汤 3\n00ML\n热:顺滑牛乳 80 克,牛奶 100 克,果糖 30 克,山茶花茶汤\n350ML\n冷饮:冰块补满即可\n热饮:打热之后,热水补满即可\n常温:纯净水补满即可\n 注意事项\n20A 杯子出品,封口盖盖\n茉莉香芋奶茶\n 原料与做法\n香芋酱60 克,顺滑牛乳100 克,牛奶100 克,绿茶 200 克\n冷:冰块补满\n热:开水补满\n常温:纯净水补满\n 注意事项\n可做冷、热、常温\n20A 杯子出品,封口盖盖\n大白梨轻乳茶\n 原料与做法\n冷:顺滑牛乳 50 克,牛奶 80 克,大白梨糖浆 35 克,果糖 1\n5 克,绿茶汤 300ML\n热:顺滑牛乳 80 克,牛奶 100 克,大白梨糖浆 35 克,果糖\n15 克,绿茶汤 350ML\n冷饮:冰块补满即可\n热饮:打热之后,热水补满即可\n常温:纯净水补满即可\n 注意事项\n可做冷、热、常温\n20A 杯子出品,封口盖盖", "charCount": 434}, {"page": 5, "text": "— 5 —\n 柠檬茶\n金桔柠檬\n 原料与做法\n金桔两颗对半切开去籽挤汁,⻩柠檬糖浆 20 克\n金桔汁 30 克,蜂蜜糖浆 20 克,果糖 2 0 克,\n香水柠檬果溶 10 克,绿茶 300 克,⻘柠檬 3 片\n冰块布满,雪克完成即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品\n金桔百香\n 原料与做法\n金桔两颗对半切开去籽挤汁,⻩柠檬糖浆 20 克\n金桔汁 30 克,蜂蜜糖浆 20 克,果糖 2 0 克\n香水柠檬果溶 10 克,绿茶 300 克,速冻百香果 20 克\n冰块布满,雪克完成即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品\n金桔蜜柚\n 原料与做法\n金桔两颗对半切开去籽挤汁,柚子酱 50 克\n金桔汁 50 克,蜂蜜糖浆 20 克,果糖 15 克,\n绿茶 300 克\n冰块补满,雪克完成即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805出品", "charCount": 513}, {"page": 6, "text": "— 6 —\n茉莉冰茶\n 原料与做法\n⻘苹果糖浆 40 克,果糖 20 克\n⻘柠檬 两 片(装饰),绿茶 300 克\n做法:将原料全部放入雪克壶中,雪克均匀后\n即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品\n凤梨百香柠檬茶\n 原料与做法\n新鲜凤梨 50 克,菠萝酱 40 克,香水柠檬果溶 10 克\n蜂蜜糖浆 20 克,果糖 25 克,速冻百香果 20 克\n山茶花茶汤 250 克\n做法:雪克壶中先加入凤梨肉捣碎,再加入厚切香水柠檬两\n片,100 克冰块\n微微捣出柠檬香气,再放入剩余原料,补兵至 600 刻度线\n雪克完成后即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加山茶花茶汤 100 克\n9805 杯出品\n清新苹果\n 原料与做法\n新鲜苹果 50 克,阿克苏苹果酱 50 克,蜂蜜糖浆 20 克\n果糖 20 克,绿茶 300 克,香水柠檬果溶 10 克\n做法:雪克壶中先加入苹果肉捣碎,再加入厚切香水柠檬两\n片,100 克冰块\n微微捣出柠檬香气,再放入剩余原料,补兵至 600 刻度线\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加:绿茶汤100 克\n9805杯出品", "charCount": 591}, {"page": 7, "text": "— 7 —\n草莓桑葚柠檬茶\n 原料与做法\n新鲜草莓 (大的3 颗,小的 4 颗),桑葚酱 40 克,蜂蜜糖浆\n20 克\n果糖 25 克,香水柠檬果溶 10 克,山茶花 茶汤250 克\n做法:雪克壶中先加入草莓捣碎,再加入厚切香水柠檬两片,\n100 克冰块\n微微捣出柠檬香气,再放入剩余原料,补兵至 600 刻度线\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加山茶花茶汤 100 克\n9805杯出品\n杨梅冰茶\n 原料与做法\n杨梅草莓酱 40 克,蜂蜜糖浆 20 克,果然 20 克\n香水柠檬果溶 10 克,绿茶 300 克\n厚切柠檬两片,冰块 100 克\n做法:雪克壶中加入香水柠檬两片、冰块,微微捣出柠檬香气\n再放入剩余原料,补冰块至600 刻度线\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶汤 100 克\n9805杯出品", "charCount": 430}, {"page": 8, "text": "— 8 —\n泰式手打柠檬茶\n 原料与做法\n厚切柠檬两片,渣打绿柠檬糖浆 40 克\n蜂蜜糖浆 20 克,果糖 10 克,白酒糖浆 10 克\n香水柠檬果溶 10 克,纯净水 300 克,冰块 100 克\n做法:雪克壶中加入厚切香水柠檬两片、冰块,微微捣出柠檬\n香气\n再放入剩余原料,补冰块至600 刻度线\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶汤 100 克\n9805杯出品\n蜜桃荔枝冰茶\n 原料与做法\n厚切柠檬 2 片,速冻水蜜桃汁60 克,速冻荔枝汁 40 克\n果糖 20 克,香水柠檬果溶 10 克,绿茶 300 克\n冰块 100 克\n做法:雪克壶中加入厚切香水柠檬两片、冰块,微微捣出柠檬\n香气\n再放入剩余原料,补冰块至600 刻度线\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶汤 100 克\n9805杯出品", "charCount": 440}, {"page": 9, "text": "— 9 —\n冰鲜柠檬红茶\n 原料与做法\n⻩柠檬一片,香水柠檬一片,金桔一颗横切挤汁\n⻩柠檬糖浆 30 克,蜂蜜糖浆20 克,果糖 20克\n红茶汤 300 克\n做法:雪克壶中放入所有原料,雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加红茶汤 100 克\n9805杯出品\n嘿嘿嘿柠檬茶\n 原料与做法\n新鲜蓝莓五颗,厚切香水柠檬两片,大蓝莓酱 30 克,桑葚酱\n20 克\n蜂蜜糖浆 20 克,果糖 20 克,香水柠檬果溶 10 克,绿茶 200\n克\n奶盖 80 克\n做法:将蓝莓捣碎,再放入香水柠檬微微捣出香气\n再放入剩余原料,雪克均匀,倒入杯中,奶盖铺顶即可出品\n 注意事项\n不可常温,不可无糖\n正常冰少糖:果糖减 10 克\n少冰、少冰少糖:多加 50 克绿茶\n酸⻆茉莉冰茶\n 原料与做法\n酸⻆酱50 克,果糖 20 克,绿茶 300 克\n⻘柠檬两片(装饰),冰块\n做法:将原料全部放入雪克壶中,雪克均匀后\n即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品", "charCount": 510}, {"page": 10, "text": "— 10 —\n香椰茉莉冰茶\n 原料与做法\n香椰水 150 克,绿茶 200 克,蜜瓜酱 40 克\n果糖 1 0 克,香水柠檬两片(装饰)\n做法:将原料全部放入雪克壶中,雪克均匀后\n即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品\n三华李冰茶\n 原料与做法\n速冻三华李汁 100 克\n绿茶 250 克,果糖30 克\n做法L:将以上原料全部放入雪克壶中\n雪克完成后即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶汤 100 克\n9805杯出品", "charCount": 299}, {"page": 11, "text": "— 11 —\n 美式咖啡\n美式大杯\n 原料与做法\n大杯:咖啡液一份,纯净水,冰块\n超大杯:咖啡液两份,纯净水,冰块\n 注意事项\n可做热:开水与纯净水比例 5:3\n大杯:一份咖啡,12A 杯子出品\n超大杯:两份咖啡,20A 杯子出品\n橙C 美式大杯\n 原料与做法\n大杯:速冻橙汁 100 克,果糖 20 克,冰块,纯净水,咖啡一\n份\n超大杯:速冻橙汁 150 克,果糖 25 克,冰块,纯净水,咖啡\n一份\n橙C 百香美式\n 原料与做法\n大杯:速冻柳橙百香汁 100,咖啡一份,果糖 20 克,纯净\n水,冰块\n超大杯:速冻柳橙百香汁 150,咖啡一份,果糖 25 克,纯净\n水,冰块\n话梅冰美式\n 原料与做法\n大杯:话梅汁 50 克,咖啡一份,果糖 10 克,纯净水,冰块\n超大杯:话梅汁 70 克,咖啡一份,果糖 15 克,纯净水,冰\n块\n蜜桃 C 美式\n 原料与做法\n大杯:速冻水蜜桃汁 100 克,咖啡一份,果糖 2 0 克,纯净\n水,冰块\n超大杯:速冻水蜜桃汁 150 克,咖啡一份,果糖 2 5 克,纯净\n水,冰块", "charCount": 460}, {"page": 12, "text": "— 12 —\n可乐冰美式\n 原料与做法\n听装可乐一罐,冰块,咖啡一份\n 注意事项\n只有超大杯\n浮森(带酒精)\n 原料与做法\n汤力水一瓶,利口酒50克\n做法:杯中放入冰块,倒入汤里水\n最后再倒入利口酒即可\n 注意事项\n9805杯子出品\n不可常温,不可做热饮\n汤力美式\n 原料与做法\n汤力水一份,浓缩美式一份\n 注意事项\n只有超大杯\n不可做常温,热饮\n香椰水冰美式\n 原料与做法\n香椰水 150 克,蜜瓜酱 40 克,纯净水 100 克\n浓缩美式咖啡液\n超大杯:香椰水 180 克,蜜瓜酱 50 克,纯净水 130 克\n 注意事项\n不可常温,热饮", "charCount": 271}, {"page": 13, "text": "— 13 —\n 拿铁咖啡\n原味拿铁(冰)\n 原料与做法\n大杯:厚乳芝士 30 克,顺滑牛乳 50 克,鲜奶 170 克,咖啡\n液 35 克\n超大杯:厚乳芝士 50 克,顺滑牛乳 80 克,鲜奶 250 克,咖\n啡液 35 克\n做法:将以上材料全部加入杯中,搅拌均匀,补冰至九分满即\n可出品\n 注意事项\n少冰:牛奶多加 50 克\n不可常温\n原味拿铁(热)\n 原料与做法\n杯中放入顺滑牛乳 50 克,再加入 35 克咖啡液,再加入打发\n好奶泡的热牛奶\n融合均匀,即可出品\n 注意事项\n12A 纸杯出品,加盖\n生椰拿铁(冰)\n 原料与做法\n大杯:顺滑牛乳 80 克,生椰乳 170 克,咖啡液 35 克\n超大杯:顺滑牛乳 100 克,生椰乳270 克,咖啡液 35 克\n以上材料,放入杯中,搅拌均匀,冰块补至九分满即可出品\n 注意事项\n少冰:多加 50 克生椰乳\n不可常温", "charCount": 383}, {"page": 14, "text": "— 14 —\n生椰拿铁(热)\n 原料与做法\n杯中放入顺滑牛乳 50 克,再加入 35 克咖啡液,再把生椰乳\n和牛奶\n按一比一比例打发好奶泡\n倒入杯中融合均匀,即可出品\n 注意事项\n12A 纸杯出品\n冰感生椰拿铁\n 原料与做法\n大杯:冰感糖浆 30 克,顺滑牛乳80 克,生椰乳 170 克,咖\n啡液 35 克\n超大杯:冰感糖浆 40 克,顺滑牛乳 100 克,生椰乳 270\n克,咖啡 35 克\n将以上材料全部放入杯中,搅拌均匀,冰块补至九分满,即可\n出品\n 注意事项\n少冰:生椰乳多加 50 克\n不可常温\n小⻩油拿铁\n 原料与做法\n牛乳芝士 40 克,特调牛乳 80 克,纯净水 120 克\n奶油酥饼糖浆 15 克,果糖 5 克,咖啡液 35 克\n将以上材料加入杯中,搅拌均匀,补冰至九分满\n即可出品\n 注意事项\n不可无糖,不可常温,不能做超大杯,不能做热饮\n正常冰少糖:不加果糖\n少冰、少冰少糖:一律在原基础上加 50 克纯净水", "charCount": 416}, {"page": 15, "text": "— 15 —\n黑巧拿铁\n 原料与做法\n巧克力粉 25 克,开水 20 克,牛乳芝士 30 克\n特调牛乳 50 克,纯净水 100 克,咖啡液 35 克\n用开水将巧克力粉搅化,再放入剩余原料\n搅拌均匀,补冰至九分满,即可出品\n 注意事项\n不可无糖,不可常温,不能做超大杯,不能做热饮\n少冰、少冰少糖:一律在原基础上加 50 克纯净水\n荔枝拿铁\n 原料与做法\n速冻荔枝汁 100 克,鲜奶,顺滑牛乳 50 克\n浓缩意式咖啡液\n超大杯:速冻荔枝汁 130 克,鲜奶,顺滑牛乳80 克\n 注意事项\n不可做热,常温\n少冰,多加 50 克鲜奶\n生椰茉莉拿铁\n 原料与做法\n绿茶 100 克,生椰乳 150 克,浓缩咖啡液\n超大杯:绿茶 150 克,生椰乳 200 克,浓缩咖啡液\n 注意事项\n不可做热,常温\n少冰:多加 50 克生椰乳\n抹茶鲜奶\n 原料与做法\n抹茶粉 30 克,炼乳 5 克,热水 50 克\n鲜奶 150 克 ,抹茶冰淇淋一球\n做法:在雪克壶中放入抹茶粉和热水,搅拌均匀后,放入其余\n原材料\n雪克完成后,过滤到提前放好冰块与抹茶冰淇淋的杯中即可\n 注意事项\n不可常温,热饮,无糖\n少糖:不加炼乳", "charCount": 499}, {"page": 16, "text": "— 16 —\n 新鲜水果茶\n橙意满满鲜果茶\n 原料与做法\n新鲜橙子 60 克,橙子酱 40 克,接⻣木糖浆 15 克\n果糖 15 克,山茶花茶汤 250 克\n橙子片两片装饰\n做法:雪克壶中放入橙子捣碎,再依次放入剩余原料\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加山茶汤 100 克\n9805杯出品\n⻄瓜芒芒鲜果茶\n 原料与做法\n小台芒一个,⻄瓜 60 克,⻄瓜糖浆 20 克\n芒果酱 20 克,果糖 20 克,山茶花茶汤 250 克\n做法:现在雪克壶中把芒果和⻄瓜捣碎\n再依次放入剩余原料,雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加山茶花100 克\n9805杯出品\n生椰⻄瓜鲜果茶\n 原料与做法\n新鲜⻄瓜 200 克,生椰乳 80 克,绿茶汤 100 克\n果糖 20 克\n做法:现在雪克壶中把⻄瓜捣碎,再依次放入剩余原料\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰少糖:一律在原基础上加绿茶汤100 克\n9805杯出品", "charCount": 513}, {"page": 17, "text": "— 17 —\n莓莓金菠萝\n 原料与做法\n新鲜草莓 3 颗,新鲜凤梨 50 克,菠萝酱 40 克\n果糖 20 克,山茶花 250 克\n做法:先在雪克壶中把草莓和凤梨捣碎\n再依次放入剩余原料,雪克均匀\n金桔横切两颗装饰,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰少糖:一律在原基础上加山茶花茶汤100 克\n9805杯出品\n超级水果茶\n 原料与做法\n带籽⻄番莲酱 30 克,菠萝酱 30 克,蜂蜜糖浆 20 克\n果糖 20 克,速冻百香果 20 克,绿茶 300 克\n金桔一颗横切,⻩柠檬,⻘柠檬,橙子,⻄柚各一片\n⻄瓜 5 小块\n做法:把所有原料全部放入雪克壶中,雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶 100 克\n9805杯出品\n生椰菠萝蜜\n 原料与做法\n速冻菠萝蜜100克,生椰乳100克\n绿茶150克,果糖20克\n做法:现在雪克壶中依次放入所有原料\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶100 克\n9805杯出品", "charCount": 514}, {"page": 18, "text": "— 18 —\n甜橙百香鲜果茶\n 原料与做法\n速冻橙子百香100克,果糖20克\n速冻百香果20克,绿茶250克\n做法:现在雪克壶中依次放入所有原料\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n正常冰少糖:减果糖 10 克\n少冰、少冰少糖:一律在原基础上加绿茶100 克\n9805杯出品\n杨枝甘露\n 原料与做法\n速冻杨枝甘露一袋,纯净水 150 克,\n生椰乳 30 克,速冻芒果汁 30 克,新鲜芒果丁\n做法:杯中放芒果丁备用\n雪克壶中放入解冻后的杨枝甘露一袋,以及剩余原料\n雪克均匀,即可出品\n 注意事项\n不可做热饮,常温以及无糖\n少冰、少冰少糖:一律在原基础上加纯净水100 克\n9805杯出品", "charCount": 304}, {"page": 19, "text": "— 19 —\n 气泡特饮\n猕猴桃莫吉托\n 原料与做法\n猕猴桃糖浆 30 克,莫⻄多薄荷糖浆 20 克,果糖 10 克\n香水柠檬果溶 10 克,新鲜薄荷叶两根,香水柠檬 3 片\n以上材料全部仿佛雪克壶中,加冰块 10 颗左右\n用捣棒捣出香气,过滤至杯中\n加冰至七分满,加气泡水至八分满,搅拌均匀\n装饰:金桔横切一颗,橙子,⻄柚,⻘柠檬各一片,薄荷叶一\n根\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品\n茉莉⻘提气泡水\n 原料与做法\n⻘葡萄酱 30 克,茉莉花液 20 克,果糖 2 0 克\n香水柠檬果溶 10 克,阳光玫瑰(剥皮) 4 颗\n做法:雪克壶中加入阳光玫瑰捣碎,再加入剩余原料\n适量冰块,雪克均匀,倒入杯中\n加冰七分满,气泡水八分满\n装饰:金桔横切一颗,橙子,⻄柚,⻘柠檬各一片,薄荷叶一\n根\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品", "charCount": 447}, {"page": 20, "text": "— 20 —\n夏黑葡萄玫瑰气泡水\n 原料与做法\n夏黑葡萄玫瑰酱 40 克,重瓣玫瑰花液10 克,山茶花茶汤50\n克\n果糖 10 克,香水柠檬果溶 10 克\n做法:将以上材料全部放入雪克壶中,雪克均匀,倒入杯中\n加冰块至 8 分满,气泡水至 9分满,搅拌均匀,即可出品\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品\n红色海洋\n 原料与做法\n⻄瓜糖浆 30 克,红石榴糖浆 10 克,香水柠檬果溶 10 克\n果糖 10 克,跳跳糖两袋\n做法:雪克壶中放入以上材料,少量冰块,雪克均匀\n到入杯中,加冰块至 7 分满,气泡水至8 分满,放入跳跳糖,\n搅拌均匀\n装饰:金桔横切一颗,橙子,⻄柚,⻘柠檬各一片,薄荷叶一\n根\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品", "charCount": 402}, {"page": 21, "text": "— 21 —\n蓝色海洋\n 原料与做法\n蓝柑糖浆 30 克,莫⻄多薄荷糖浆 20 克,果糖 10 克\n香水柠檬果溶 10 克,跳跳糖两袋\n做法:雪克壶中放入以上材料,少量冰块,雪克均匀\n到入杯中,加冰块至 7 分满,气泡水至8 分满,放入跳跳糖,\n搅拌均匀\n装饰:金桔横切一颗,橙子,⻄柚,⻘柠檬各一片,薄荷叶一\n根\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品\n水果缤治\n 原料与做法\n⻄瓜糖浆 30 克,菠萝糖浆 30 克,香水柠檬果溶 10 克\n果糖 10 克,红石榴糖浆 10 克\n做法:雪克壶中放入以上材料,少量冰块,雪克均匀\n到入杯中,加冰块至 7 分满,气泡水至8 分满,搅拌均匀\n装饰:金桔横切一颗,橙子,⻄柚,⻘柠檬各一片,薄荷叶一\n根\n 注意事项\n不可常温,不可无糖\n正常冰少糖:减 10 克果糖\n少冰少糖:减冰块,补气泡水,其余不变\n650 注塑杯出品", "charCount": 423}, {"page": 22, "text": "— 22 —\n 熬煮鲜果茶\n南非波士柚子茶\n 原料与做法\n杯:柚子酱 50 克,速冻山楂三颗切开,波士茶包一个,枸杞\n5 颗\n壶:柚子酱 150 克,速冻山楂六颗切开,波士茶包一个,枸\n杞十颗\n熬煮出品即可\n 注意事项\n配水壶,蜂蜜\n杯:搅棒\n壶:托盘\n⻉母桂花雪梨\n 原料与做法\n杯:雪梨四分之一个去皮切丝,雪梨酱 40 克,⻉母八颗\n壶:雪梨半个起皮切丝,雪梨酱 80 克,⻉母 15 颗\n做法:把原料放入锅中熬煮两分钟后,再加入枸杞五颗\n干百合两朵,干桂花适量,搅拌均匀,倒入杯中,出品即可\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个\n黑枸杞胎菊雪梨茶\n 原料与做法\n杯:雪梨四分之一个去皮切丝,雪梨酱 40 克,黑枸杞茶包一\n个撕开\n壶:雪梨半个去皮切丝,雪梨酱 80 克,黑枸杞茶包两个撕开\n做法:将所有原料放入锅中熬煮两分钟,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,纸杯两个", "charCount": 410}, {"page": 23, "text": "— 23 —\n桂圆红枣生姜茶\n 原料与做法\n杯:生姜三片切丝,⻰眼酱 40 克,枸杞5颗,大枣 3 颗\n干桂圆 5 颗,红茶包一个\n壶:生姜六片切丝,⻰眼酱 80 克,枸杞15 颗,大枣 5 颗\n干桂圆 10 颗,红茶包两个\n做法:将以上材料放入锅中,熬煮两分钟,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个\n玫瑰桑葚养身茶\n 原料与做法\n杯:桑葚酱 40 克,干玫瑰五朵,干桂圆五颗,桑葚干五颗\n蓝莓茶包一个\n壶:桑葚酱 80克,干玫瑰十朵,干桂圆十颗,桑葚干十颗\n蓝莓茶包两个\n做法:将所有原料放入锅中,熬煮两分钟,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个\n香橙百香鲜果茶\n 原料与做法\n杯:橙子酱20 克,带籽⻄番莲酱 20 克,甜橙茉莉茶包一个\n壶:橙子酱 40 克,带籽⻄番莲 酱 30 克,甜橙茉莉茶包两个\n杯中放入新鲜百香果 20 克,橙子片三片,果糖 10 克\n壶中放入新鲜百香果40克,橙子片六片,果糖 20 克\n做法:酱以上材料全部放入锅中,熬煮两分钟,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个", "charCount": 497}, {"page": 24, "text": "— 24 —\n凤梨百香鲜果茶\n 原料与做法\n杯:新鲜凤梨60 克,冰糖 50 克\n壶:新鲜凤梨 120 克,冰糖 100 克\n做法:将以上材料全部放入锅中,熬煮五分钟(冰糖全部熬\n化)\n倒入杯中(壶中)即可出品\n杯中提前放入新鲜百香果 20 克\n壶中提前放入新鲜百香果 40 克\n 注意事项\n配开水,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个\n树莓果 C\n 原料与做法\n杯:树莓酱 40 克,速冻山楂四颗切开,蓝莓茶包一个\n壶:树莓酱 80 克,速冻山楂八颗切开,蓝莓茶包两个\n做法:将以上材料全部放入锅中熬煮两分钟\n倒入杯(壶)中,即可出品\n杯中提前放入 10 克果糖\n壶中提前放入 20 克果糖\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯两个\n玫瑰雪梨煮白茶\n 原料与做法\n杯:雪梨四分之一个去皮切丝,雪梨酱 50克,干玫瑰 10 颗,\n白茶包一个\n壶:雪梨半个去皮切丝,雪梨酱 100克,干玫瑰 20 颗,白茶\n包两个\n将以上材料全部放入锅中熬煮三分钟后,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯", "charCount": 466}, {"page": 25, "text": "— 25 —\n刺梨山楂\n 原料与做法\n杯:刺梨 25 克,冰糖 25 克,速冻山楂 4 颗(不切),白茶\n包一个,橙皮 1.5 克\n壶:刺梨 50 克,冰糖 50 克,速冻山楂 8 颗(不切),白茶\n包两个,橙皮 3 克\n做法 :将以上材料全部放入锅中熬煮五分钟(冰糖熬化)之\n后,即可出品\n 注意事项\n配开水壶,蜂蜜\n杯:搅棒\n壶:托盘,小纸杯\n时令水果茶\n 原料与做法\n在锅中加入⻄瓜五块,橙子两片,苹果两块,雪梨两块,凤梨\n两块\n玻璃酱 40 克,带籽⻄番莲酱 40 克,白茶包两个\n熬住一分钟,倒入壶中即可\n提前在壶中放入:草莓一颗,蓝莓一颗,⻄柚,⻘柠檬,⻩柠\n檬各一片\n速冻百香果 40 克,果糖 20 克\n 注意事项\n只可做一壶\n配开水壶,蜂蜜,托盘,小纸杯", "charCount": 336}, {"page": 26, "text": "— 26 —\n 小吃类\n小吃\n 原料与做法\n炸炉温度 150—160 度,所有小吃出品前需控油\n薯条 200 克,三分半\n酥肉 200 克,四分半\n鸡米花 200 克,两分半\n藤椒鸡尖 200 克(需解冻三分钟),三分半\n原切土豆片 200 克(需解冻),五分钟\n掌中宝200 克,三分钟\n薯格 200 克,三分钟\n薯⻆ 200 克,四分钟\n天妇罗200 克,四分半\n藕条150 克,三分钟\n丁丁鸡块八块,六分钟\n霸王条八块,三分半\n咔咔鸡九块,三分半\n牛肉小串两把(需解冻三分钟),三十秒左右\n韩式炸鸡:韩式炸鸡四块、允指伴翅四块、芝士年糕五根\n(炸鸡和伴翅需解冻,年糕需开水化冻,先炸鸡块和鸡翅(三\n分钟),再放入年糕炸二十秒左右。出品时候需挤韩式炸鸡酱\n和蜂蜜芥末酱)\n鸡翅根:四个(需中火解冻三分钟),五分钟\n⻛味烤鸡翅(需解冻三分钟):两个腿、两个翅,三分半\n⻩金琵琶腿:一个(需解冻,中火四分钟),七分钟\n⻣肉相连、五花肉:四串(需解冻四分钟),三分钟\n全家福:奥尔良鸡翅一对,丁丁鸡块一个,酥肉两根,藤椒鸡\n尖两个,五花肉串一串,⻣肉相连一串,咔咔鸡一片,鸡米花\n十个以内,薯条十个以内,霸王条一根,薯格两个,薯⻆两\n个,掌中宝五个,藕条五个,翅根一个。\n 注意事项\n所有小吃需撒欧芹碎,一点点辣椒面\n再在旁边打一勺辣椒面", "charCount": 568}, {"page": 27, "text": "— 27 —\n 酸奶\n蓝莓酸奶\n 原料与做法\n大蓝莓酱 50 克,酸奶 300 克,牛奶 100 克,蓝莓五颗\n做法:冰沙机中放入除蓝莓外剩余原料,再放入15-20颗左右\n冰块\n打完之后,再放入蓝莓,点打一次,倒入杯中即可\n 注意事项\n9805 杯子出品\n⻩桃酸奶\n 原料与做法\n⻩桃酱 50 克,酸奶300,牛奶 100,冰块15-20颗左右\n将所有原料全部放入冰沙机中,搅拌均匀\n倒入杯中,即可出品\n 注意事项\n9805 杯子出品\n蜜桃荔枝酸奶\n 原料与做法\n速冻水蜜桃汁 50 克,速冻荔枝汁 50 克\n酸奶 300 克,牛奶 100 克,冰块15-20 颗\n将全部原料放入冰沙机中,搅拌均匀\n倒入杯中,即可出品\n 注意事项\n9805 杯子出品\n⻘芒酸奶\n 原料与做法\n⻘芒酱 50 克,酸奶300,牛奶 100,冰块 15-20 颗\n将所有原料全部放入冰沙机中,搅拌均匀\n倒入杯中,即可出品\n 注意事项\n9805 杯子出品", "charCount": 415}, {"page": 28, "text": "— 28 —\n杨梅草莓酸奶\n 原料与做法\n杨梅草莓酱 50 克,酸奶 300 克,牛奶 100 克,草莓三颗\n做法:冰沙机中放入除草莓外剩余原料,再放入15-20左右冰\n块\n打完之后,再放入草莓,点打两次,倒入杯中即可\n 注意事项\n9805 杯子出品\n蜜瓜酸奶\n 原料与做法\n蜜瓜酱 50 克,酸奶300,牛奶 100,冰块 15-20颗\n将所有原料全部放入冰沙机中,搅拌均匀\n倒入杯中,即可出品\n 注意事项\n9805 杯子出品", "charCount": 214}, {"page": 29, "text": "— 29 —\n 冰沙\n芝士葡萄干酪\n 原料与做法\n速冻葡萄汁 150克,冰块 300 克,果糖 40 克\n绿茶汤 50,阳光玫瑰四颗去皮切丁,奶盖 80 克\n先将阳光玫瑰丁放入杯中\n冰沙机中放入除阳光玫瑰与奶盖的剩余材料,搅拌均匀\n倒入杯中,奶盖铺顶,封口后摇匀即可出品\n 注意事项\n少糖:减 20 克果糖\n9805 杯子出品\n芝士芒果干酪\n 原料与做法\n速冻芒果汁 150 克,冰块 300 克,果糖 40 克\n绿茶汤 50,芒果半个切丁,奶盖 80 克\n先将芒果丁放入杯中\n冰沙机中放入除阳光玫瑰与奶盖的剩余材料,搅拌均匀\n倒入杯中,奶盖铺顶,封口后摇匀即可出品\n 注意事项\n少糖:果糖减 20 克\n9805 杯子出品\n芝士白桃干酪\n 原料与做法\n速冻 水蜜桃汁150 克,冰块 300 克,果糖 40 克\n绿茶汤 50,奶盖 80 克\n冰沙机中放入除奶盖的剩余材料,搅拌均匀\n倒入杯中,奶盖铺顶,封口后摇匀即可出品\n 注意事项\n少糖:果糖减 20 克\n9805 杯子出品", "charCount": 438}, {"page": 30, "text": "— 30 —\n芝士干酪三华李\n 原料与做法\n速冻三华李汁 150 克,冰块 300 克,果糖 40 克\n绿茶汤 50,奶盖 80 克\n冰沙机中放入除奶盖的剩余材料,搅拌均匀\n倒入杯中,奶盖铺顶,封口后摇匀即可出品\n 注意事项\n少糖:减 20 克果糖\n9805 杯子出品\n芝士蜜桃干酪\n 原料与做法\n速冻水蜜桃汁100克,速冻荔枝汁50克\n冰块 300 克,果糖40克,绿茶50克,奶盖 80 克\n冰沙机中放入除奶盖的剩余材料,搅拌均匀\n倒入杯中,奶盖铺顶,封口后摇匀即可出品\n 注意事项\n少糖:减少 20 克果糖\n9805 杯子出品", "charCount": 266}, {"page": 31, "text": "— 31 —\n 软饮\n威牛\n 原料与做法\n威牛浓浆 50 克,纯净水 400 克,冰块\n冰鲜柠檬水\n 原料与做法\n厚切⻩柠檬三片捣汁,果蜜30 克,冰块,纯净水\n水蜜桃冰茶\n 原料与做法\n水蜜桃冰茶粉 50 克,加入 100 克热水化开\n再加入冰块,纯净水\n酸梅汁\n 原料与做法\n浓缩酸梅汁 50 克,纯净水 400 克,冰块", "charCount": 163}, {"page": 32, "text": "— 32 —\n 中国茶\n花茶\n 原料与做法\n乌⻰茶\n 原料与做法\n红茶\n 原料与做法\n代用茶\n 原料与做法\n普洱茶\n 原料与做法\n绿茶\n 原料与做法", "charCount": 74}]}</script>
+  <script>
+    const source = JSON.parse(document.getElementById("pdfData").textContent);
+    const pages = source.pages;
+    const input = document.getElementById("searchInput");
+    const clearButton = document.getElementById("clearButton");
+    const status = document.getElementById("status");
+    const results = document.getElementById("results");
+    const empty = document.getElementById("empty");
+    const quickTerms = document.getElementById("quickTerms");
+    const suggestions = ["红茶汤", "果糖", "柠檬", "巧克力", "绿茶汤", "牛乳"];
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function tokenize(value) {
+      return value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    }
+
+    function highlight(text, terms) {
+      let safe = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      for (const term of terms) {
+        safe = safe.replace(new RegExp(escapeRegExp(term), "gi"), match => `<mark>${match}</mark>`);
+      }
+      return safe;
+    }
+
+    function makeSnippet(text, terms) {
+      const lower = text.toLowerCase();
+      let first = -1;
+      for (const term of terms) {
+        const index = lower.indexOf(term);
+        if (index !== -1 && (first === -1 || index < first)) first = index;
+      }
+      if (first === -1) first = 0;
+      const start = Math.max(0, first - 48);
+      const end = Math.min(text.length, first + 132);
+      const prefix = start > 0 ? "..." : "";
+      const suffix = end < text.length ? "..." : "";
+      return prefix + text.slice(start, end) + suffix;
+    }
+
+    function scorePage(text, terms) {
+      const lower = text.toLowerCase();
+      let score = 0;
+      for (const term of terms) {
+        const matches = lower.match(new RegExp(escapeRegExp(term), "g"));
+        if (matches) score += matches.length;
+      }
+      const allTerms = terms.every(term => lower.includes(term));
+      return allTerms ? score : 0;
+    }
+
+    function search() {
+      const terms = tokenize(input.value);
+      results.innerHTML = "";
+      if (!terms.length) {
+        status.textContent = "输入关键词开始查找";
+        empty.style.display = "block";
+        return;
+      }
+
+      const matches = pages
+        .map(page => ({ ...page, score: scorePage(page.text, terms) }))
+        .filter(page => page.score > 0)
+        .sort((a, b) => b.score - a.score || a.page - b.page);
+
+      status.textContent = matches.length ? `找到 ${matches.length} 页相关内容` : "没有找到相关内容";
+      empty.style.display = matches.length ? "none" : "block";
+      if (!matches.length) {
+        empty.innerHTML = "<strong>没有命中</strong><span>换一个产品名、原料名，或减少关键词。</span>";
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      matches.forEach(page => {
+        const article = document.createElement("article");
+        article.className = "card";
+        const snippet = makeSnippet(page.text, terms);
+        article.innerHTML = `
+          <div class="card-head">
+            <div class="page">第 ${page.page} 页</div>
+            <div class="score">命中 ${page.score} 次</div>
+          </div>
+          <p class="snippet">${highlight(snippet, terms)}</p>
+          <div class="actions">
+            <button class="action" type="button" data-copy="${page.page}">复制页码</button>
+          </div>
+          <details>
+            <summary>查看本页原文</summary>
+            <div class="fulltext">${highlight(page.text, terms)}</div>
+          </details>
+        `;
+        fragment.appendChild(article);
+      });
+      results.appendChild(fragment);
+    }
+
+    suggestions.forEach(term => {
+      const button = document.createElement("button");
+      button.className = "chip";
+      button.type = "button";
+      button.textContent = term;
+      button.addEventListener("click", () => {
+        input.value = term;
+        search();
+        input.focus();
+      });
+      quickTerms.appendChild(button);
+    });
+
+    results.addEventListener("click", async event => {
+      const button = event.target.closest("[data-copy]");
+      if (!button) return;
+      const text = `第 ${button.dataset.copy} 页`;
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = "已复制";
+        setTimeout(() => button.textContent = "复制页码", 900);
+      } catch {
+        button.textContent = text;
+      }
+    });
+
+    clearButton.addEventListener("click", () => {
+      input.value = "";
+      search();
+      input.focus();
+    });
+    input.addEventListener("input", search);
+  </script>
+</body>
+</html>
